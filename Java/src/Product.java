@@ -1,6 +1,7 @@
 import javax.xml.soap.Text;
 import java.math.BigDecimal;
 
+//model class for product
 public class Product {
     private int productID;
     private String productName;
