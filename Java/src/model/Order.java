@@ -1,3 +1,5 @@
+package model;
+
 import sun.util.calendar.LocalGregorianCalendar;
 
 import java.math.BigDecimal;
@@ -31,7 +33,7 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order ID: " + getOrderId() + "\nCustomer ID: " + getCustomerId() + "\nOrder Date: " + getOrderDate() +
+        return "model.Order ID: " + getOrderId() + "\nCustomer ID: " + getCustomerId() + "\nmodel.Order Date: " + getOrderDate() +
                 "\nTotal Price: " + getTotalPrice() + "\nStatus: " + getStatus();
     }
 }
