@@ -36,8 +36,8 @@ public class Product {
         this.productStock = productStock;
     }
 
-    public void setProductID(int productID) {
-        this.productID = productID;
+    public void setShippingTime(int shippingTime) {
+        this.shippingTime = shippingTime;
     }
 
     public int getProductID() {
@@ -52,12 +52,16 @@ public class Product {
         return productPrice;
     }
 
+    public int getShippingTime() {
+        return shippingTime;
+    }
+
     public int getProductStock() {
         return productStock;
     }
 
     @Override
     public String toString() {
-        return "ID: " + getProductID() + "\nName: " + getProductName() + "\nPrice: " + getProductPrice() + "\nStock: " + getProductStock();
+        return "ID: " + getProductID() + " Name: " + getProductName() + " Price: " + getProductPrice() + " Stock: " + getProductStock();
     }
 }

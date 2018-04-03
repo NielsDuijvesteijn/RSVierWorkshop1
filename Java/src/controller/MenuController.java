@@ -17,10 +17,13 @@ public class MenuController {
         switch (menuNumber){
             // nieuw product
             case 1: productController.createProduct(); break;
+            //print alle producten
             case 2: productController.doProductList(); break;
-            case 3: ; break;
+            //update/delete een product
+            //todo keuze geven om een product te zoeken op naam of id
+            case 3: productController.updateProduct(); break;
             case 9: return;
-            default:
+            default: System.out.println("Option not found, please try again.");
         }
 
         doMenu();
