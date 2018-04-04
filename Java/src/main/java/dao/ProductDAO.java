@@ -1,7 +1,7 @@
 package dao;
 
 import model.Product;
-
+import java.util.logging.Logger;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
