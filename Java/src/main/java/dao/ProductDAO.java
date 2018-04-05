@@ -1,39 +1,25 @@
 package dao;
 
 import model.Product;
+import util.DatabaseConnection;
+
 import java.util.logging.Logger;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class ProductDAO {
-    //private Connection connect = null;
 
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
-
-    private String url = "jdbc:mysql://localhost/test1";
-    private String username = "root";
-    private String password = "root";
     private Connection connection;
 
-//todo put connection in Util or create one try-catch block
     public void addProduct(Product product){
 
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, username, password);
-        }  catch (SQLException ex) {
-            System.out.print(ex.toString());
-            System.exit(0);
-        } catch (ClassNotFoundException ex) {
-            System.out.print(ex.toString());
-        }
        try{
-            //Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test1?autoReconnect=true&useSSL=false");
+            connection = DatabaseConnection.getConnection();
 
             preparedStatement = connection.prepareStatement("insert into test1.products (ProductName, Price) values (?, ?)");
-            //productName, productPrice");
             preparedStatement.setString(1, product.getProductName());
             preparedStatement.setBigDecimal(2, product.getProductPrice());
             preparedStatement.executeUpdate();
@@ -41,41 +27,16 @@ public class ProductDAO {
         } catch (SQLException ex) {
             System.out.print("error" + ex.toString());
         }
-        finally {
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException ex) {
-                    System.out.print(ex.toString());
-                }
-            }
-
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException ex) {
-                    System.out.print(ex.toString());
-                }
-            }
-        }
-
+       finally {
+           closeAll(resultSet, preparedStatement);
+       }
     }
 
-    //todo close connection
     public ArrayList<Product> getProductList(){
         ArrayList<Product> productList = new ArrayList<>();
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, username, password);
-        }  catch (SQLException ex) {
-            System.out.print(ex.toString());
-            System.out.print("Database not found.");
-            System.exit(0);
-        } catch (ClassNotFoundException ex) {
-            System.out.print(ex.toString());
-        }
 
         try {
+            connection = DatabaseConnection.getConnection();
             preparedStatement = connection.prepareStatement("Select * from products");
             resultSet = preparedStatement.executeQuery();
 
@@ -93,23 +54,16 @@ public class ProductDAO {
             System.out.print(ex.toString());
             return null;
         }
+        finally {
+            closeAll(resultSet, preparedStatement);
+        }
         return productList;
     }
 
     public Product getProductByName(String productName) {
 
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, username, password);
-        }  catch (SQLException ex) {
-            System.out.print(ex.toString());
-            System.out.print("Database not found.");
-            System.exit(0);
-        } catch (ClassNotFoundException ex) {
-            System.out.print(ex.toString());
-        }
-
-        try {
+            connection = DatabaseConnection.getConnection();
             preparedStatement = connection.prepareStatement("Select * from products where ProductName = ?");
             preparedStatement.setString(1, productName);
             resultSet = preparedStatement.executeQuery();
@@ -126,6 +80,9 @@ public class ProductDAO {
         } catch (SQLException ex) {
             System.out.println(ex.toString());
         }
+        finally {
+            closeAll(resultSet, preparedStatement);
+        }
         return null;
     }
 
@@ -133,17 +90,7 @@ public class ProductDAO {
         boolean updateSuccessful = true;
 
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, username, password);
-        }  catch (SQLException ex) {
-            System.out.print(ex.toString());
-            System.out.print("Database not found.");
-            System.exit(0);
-        } catch (ClassNotFoundException ex) {
-            System.out.print(ex.toString());
-        }
-
-        try {
+            connection = DatabaseConnection.getConnection();
             preparedStatement = connection.prepareStatement("UPDATE products SET ProductName = ?, Price = ?, ShippingTime = ?, Stock = ? WHERE idProduct = ?");
             preparedStatement.setString(1, product.getProductName());
             preparedStatement.setBigDecimal(2, product.getProductPrice());
@@ -156,22 +103,16 @@ public class ProductDAO {
             updateSuccessful = false;
             System.out.println(ex.toString());
         }
+        finally {
+            closeAll(resultSet, preparedStatement);
+        }
         return updateSuccessful;
     }
 
     public void deleteProduct(int productID) {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, username, password);
-        }  catch (SQLException ex) {
-            System.out.print(ex.toString());
-            System.out.print("Database not found.");
-            System.exit(0);
-        } catch (ClassNotFoundException ex) {
-            System.out.print(ex.toString());
-        }
 
         try {
+            connection = DatabaseConnection.getConnection();
             preparedStatement = connection.prepareStatement("DELETE FROM products where idProduct = ?");
             preparedStatement.setInt(1, productID);
             preparedStatement.executeUpdate();
@@ -179,5 +120,26 @@ public class ProductDAO {
         } catch (SQLException ex) {
             System.out.println(ex.toString());
         }
+        finally {
+           closeAll(resultSet, preparedStatement);
+        }
+    }
+
+    private static void closeAll(ResultSet resultSet, PreparedStatement preparedStatement){
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException ex) {
+                    System.out.print(ex.toString());
+                }
+            }
+
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException ex) {
+                    System.out.print(ex.toString());
+                }
+            }
     }
 }
