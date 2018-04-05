@@ -2,6 +2,7 @@ package dao;
 
 import model.Order;
 import model.OrderLine;
+import util.DatabaseConnection;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -21,16 +22,7 @@ public class OrderDAO {
     public Order getOrder(int orderId) {
 
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, username, password);
-        }  catch (SQLException ex) {
-            System.out.print(ex.toString());
-            System.exit(0);
-        } catch (ClassNotFoundException ex) {
-            System.out.print(ex.toString());
-        }
-
-        try {
+            connection = DatabaseConnection.getConnection();
             preparedStatement = connection.prepareStatement("select * from orders where idOrder = ?");
             preparedStatement.setInt(1, orderId);
             resultSet = preparedStatement.executeQuery();
@@ -46,6 +38,9 @@ public class OrderDAO {
         } catch (SQLException ex) {
             System.out.println(ex.toString());
         }
+        finally {
+            closeAll(resultSet, preparedStatement);
+        }
         return null;
     }
 
@@ -53,16 +48,7 @@ public class OrderDAO {
         ArrayList<OrderLine> orderLines = new ArrayList<>();
 
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, username, password);
-        }  catch (SQLException ex) {
-            System.out.print(ex.toString());
-            System.exit(0);
-        } catch (ClassNotFoundException ex) {
-            System.out.print(ex.toString());
-        }
-
-        try {
+            connection = DatabaseConnection.getConnection();
             preparedStatement = connection.prepareStatement("select * from orderline where Orders_idOrder = ?");
             preparedStatement.setInt(1, orderId);
             resultSet = preparedStatement.executeQuery();
@@ -77,23 +63,17 @@ public class OrderDAO {
             System.out.println(ex.toString());
             return null;
         }
+        finally {
+            closeAll(resultSet, preparedStatement);
+        }
         return orderLines;
     }
 
     public int placeOrder(ArrayList<OrderLine> orderLines) {
         int orderId;
-
+        
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, username, password);
-        }  catch (SQLException ex) {
-            System.out.print(ex.toString());
-            System.exit(0);
-        } catch (ClassNotFoundException ex) {
-            System.out.print(ex.toString());
-        }
-
-        try {
+            connection = DatabaseConnection.getConnection();
             preparedStatement = connection.prepareStatement("insert into orders (TotalPrice, Status) values(?, ?)", Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setInt(1, 100);
             preparedStatement.setInt(2, 1);
@@ -109,13 +89,32 @@ public class OrderDAO {
                 preparedStatement.setInt(3, orderLine.getAmount());
                 preparedStatement.execute();
             }
-
-
+            connection.close();
         } catch (SQLException ex) {
             System.out.print(ex.toString());
             return 0;
         }
-
+        finally {
+            closeAll(resultSet, preparedStatement);
+        }
         return orderId;
+    }
+
+    private static void closeAll(ResultSet resultSet, PreparedStatement preparedStatement){
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+            } catch (SQLException ex) {
+                System.out.print(ex.toString());
+            }
+        }
+
+        if (preparedStatement != null) {
+            try {
+                preparedStatement.close();
+            } catch (SQLException ex) {
+                System.out.print(ex.toString());
+            }
+        }
     }
 }
