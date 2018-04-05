@@ -64,7 +64,7 @@ public class Order {
 
     @Override
     public String toString() {
-        return "model.Order ID: " + getOrderId() + "\nCustomer ID: " + getCustomerId() + "\nmodel.Order Date: " + getOrderDate() +
-                "\nTotal Price: " + getTotalPrice() + "\nStatus: " + getStatus();
+        return "Order ID: " + getOrderId() + ", Customer ID: " + getCustomerId() + ", Order Date: " + getOrderDate() +
+                ", Total Price: " + getTotalPrice() + ", Status: " + getStatus();
     }
 }

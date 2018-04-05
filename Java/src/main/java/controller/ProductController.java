@@ -15,7 +15,6 @@ public class ProductController {
     public void createProduct(){
         productView.requestProductNameAndPrice();
 
-        //todo make it accept more than one word for the name
         String productName = InputUtil.getStringInput();
         BigDecimal productPrice = InputUtil.getBigDecimalInput();
         Product product = new Product(productName, productPrice);
@@ -57,6 +56,7 @@ public class ProductController {
             case 5: if (!productDAO.updateProduct(product)) {  productView.updateFailed();  }  return;
             case 6: productDAO.deleteProduct(product.getProductID()); return;
             case 9: return;
+            default: System.out.println("Option not found, please try again.");
         }
 
         updateMenu(product);
