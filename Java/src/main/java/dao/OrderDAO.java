@@ -79,4 +79,43 @@ public class OrderDAO {
         }
         return orderLines;
     }
+
+    public int placeOrder(ArrayList<OrderLine> orderLines) {
+        int orderId;
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection(url, username, password);
+        }  catch (SQLException ex) {
+            System.out.print(ex.toString());
+            System.exit(0);
+        } catch (ClassNotFoundException ex) {
+            System.out.print(ex.toString());
+        }
+
+        try {
+            preparedStatement = connection.prepareStatement("insert into orders (TotalPrice, Status) values(?, ?)", Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, 100);
+            preparedStatement.setInt(2, 1);
+            preparedStatement.execute();
+            resultSet = preparedStatement.getGeneratedKeys();
+            resultSet.next();
+            orderId = resultSet.getInt(1);
+
+            for (OrderLine orderLine : orderLines) {
+                preparedStatement = connection.prepareStatement("insert into orderline (Orders_idOrder, Products_idProduct, amount) values (?, ?, ?)");
+                preparedStatement.setInt(1, orderId);
+                preparedStatement.setInt(2, orderLine.getProductId());
+                preparedStatement.setInt(3, orderLine.getAmount());
+                preparedStatement.execute();
+            }
+
+
+        } catch (SQLException ex) {
+            System.out.print(ex.toString());
+            return 0;
+        }
+
+        return orderId;
+    }
 }

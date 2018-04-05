@@ -7,6 +7,22 @@ import java.util.ArrayList;
 
 public class OrderView {
 
+    public void printOrderMenu() {
+        System.out.print("1: Add Product\n2: View current Order\n3: Place Order\n4: Cancel Order\nSelect option: ");
+    }
+
+    public void requestProductId() {
+        System.out.print("Please enter Product ID: ");
+    }
+
+    public void requestProductAmount() {
+        System.out.print("Please enter the amount you would like to order: ");
+    }
+
+    public void printOrderID(int orderId) {
+        System.out.println("Order placed with Order ID: " + orderId);
+    }
+
     public void requestOrderId(){
         System.out.print("Please enter the Order ID: ");
     }
