@@ -1,22 +1,32 @@
 package model;
 
-import sun.util.calendar.LocalGregorianCalendar;
-
 import java.math.BigDecimal;
+import java.sql.Date;
 
 public class Order {
-    private int OrderId;
-    private LocalGregorianCalendar.Date orderDate;
+    private int orderId;
+    private Date orderDate;
     private BigDecimal totalPrice;
     private int customerId;
     private int status;
 
-    public int getOrderId() {
-        return OrderId;
+    public Order(int customerId){
+        this.customerId = customerId;
     }
 
-    //todo
-    public LocalGregorianCalendar.Date getOrderDate() {
+    public Order(int orderId, Date orderDate, BigDecimal totalPrice, int customerId, int status) {
+        this.orderId = orderId;
+        this.orderDate = orderDate;
+        this.totalPrice = totalPrice;
+        this.customerId = customerId;
+        this.status = status;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public Date getOrderDate() {
         return orderDate;
     }
 
@@ -30,6 +40,26 @@ public class Order {
 
     public int getStatus() {
         return status;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public void setOrderDate(Date orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     @Override
