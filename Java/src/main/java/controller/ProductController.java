@@ -15,7 +15,6 @@ public class ProductController {
     public void createProduct(){
         productView.requestProductNameAndPrice();
 
-        //todo make it accept more than one word for the name
         String productName = InputUtil.getStringInput();
         BigDecimal productPrice = InputUtil.getBigDecimalInput();
         Product product = new Product(productName, productPrice);
