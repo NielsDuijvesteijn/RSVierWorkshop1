@@ -3,20 +3,17 @@ package dao;
 import model.Order;
 import model.OrderLine;
 import util.DatabaseConnection;
-
+import java.util.logging.Logger;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 
 
 public class OrderDAO {
+    private final static Logger LOGGER = Logger.getLogger(OrderDAO.class.getName());
 
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
-
-    private String url = "jdbc:mysql://localhost/test1";
-    private String username = "root";
-    private String password = "root";
     private Connection connection;
 
     public Order getOrder(int orderId) {
@@ -54,8 +51,10 @@ public class OrderDAO {
             resultSet = preparedStatement.executeQuery();
             while(resultSet.next()){
                 int productId = resultSet.getInt("Products_idProduct");
+                String productName = resultSet.getString("ProductName");
                 int amount = resultSet.getInt("amount");
-                OrderLine orderLine = new OrderLine(orderId, productId, amount);
+                BigDecimal productPrice = resultSet.getBigDecimal("ProductPrice");
+                OrderLine orderLine = new OrderLine(orderId, productId, productName, amount, productPrice);
                 orderLines.add(orderLine);
             }
             connection.close();
@@ -69,13 +68,13 @@ public class OrderDAO {
         return orderLines;
     }
 
-    public int placeOrder(ArrayList<OrderLine> orderLines) {
+    public int placeOrder(ArrayList<OrderLine> orderLines, BigDecimal totalPrice) {
         int orderId;
         
         try {
             connection = DatabaseConnection.getConnection();
             preparedStatement = connection.prepareStatement("insert into orders (TotalPrice, Status) values(?, ?)", Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setInt(1, 100);
+            preparedStatement.setBigDecimal(1, totalPrice);
             preparedStatement.setInt(2, 1);
             preparedStatement.execute();
             resultSet = preparedStatement.getGeneratedKeys();
@@ -83,10 +82,12 @@ public class OrderDAO {
             orderId = resultSet.getInt(1);
 
             for (OrderLine orderLine : orderLines) {
-                preparedStatement = connection.prepareStatement("insert into orderline (Orders_idOrder, Products_idProduct, amount) values (?, ?, ?)");
+                preparedStatement = connection.prepareStatement("insert into orderline (Orders_idOrder, Products_idProduct, amount, ProductName, ProductPrice) values (?, ?, ?, ?, ?)");
                 preparedStatement.setInt(1, orderId);
                 preparedStatement.setInt(2, orderLine.getProductId());
                 preparedStatement.setInt(3, orderLine.getAmount());
+                preparedStatement.setString(4, orderLine.getProductName());
+                preparedStatement.setBigDecimal(5, orderLine.getProductPrice());
                 preparedStatement.execute();
             }
             connection.close();

@@ -39,8 +39,12 @@ public class OrderView {
         System.out.println("This order is empty.");
     }
 
+    public void productNotFound() {
+        System.out.println("Requested product not found.");
+    }
+
     public void showOrderLines(ArrayList<OrderLine> orderLines){
-        System.out.println("ProductID\tAmount");
+        System.out.println("ProductID\tProduct Name\t\t\tAmount\t\tPrice");
         for (OrderLine orderLine:orderLines) {
             System.out.println(orderLine.toString());
         }

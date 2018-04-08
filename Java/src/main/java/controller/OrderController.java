@@ -8,12 +8,13 @@ import model.Product;
 import util.InputUtil;
 import view.OrderView;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class OrderController {
-    OrderView orderView = new OrderView();
-    OrderDAO orderDAO = new OrderDAO();
-    ProductDAO productDAO = new ProductDAO();
+    private OrderView orderView = new OrderView();
+    private OrderDAO orderDAO = new OrderDAO();
+    private ProductDAO productDAO = new ProductDAO();
 
     public void findOrder(){
         orderView.requestOrderId();
@@ -43,21 +44,51 @@ public class OrderController {
         orderView.printOrderMenu();
         switch (InputUtil.getIntInput()){
 
-            case 1: addProductToOrder(orderLines); break;
+            case 1: addProductToOrder(orderLines, products); break;
             case 2: orderView.showOrderLines(orderLines); break;
-            case 3: orderView.printOrderID(orderDAO.placeOrder(orderLines));
+            case 3: orderView.printOrderID(orderDAO.placeOrder(orderLines, calculateTotalPrice(orderLines)));
             case 4: return;
             default: System.out.println("Option not found, please try again.");
         }
         newOrderMenu(orderLines, products);
     }
 
-    private void addProductToOrder(ArrayList<OrderLine> orderLines) {
+    public BigDecimal calculateTotalPrice(ArrayList<OrderLine> orderLines) {
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        for (OrderLine orderLine:orderLines) {
+            BigDecimal amount = new BigDecimal(orderLine.getAmount());
+            BigDecimal productPrice = orderLine.getProductPrice();
+            BigDecimal sum = amount.multiply(productPrice);
+            totalPrice = totalPrice.add(sum);
+        }
+        return totalPrice;
+    }
+
+    private void addProductToOrder(ArrayList<OrderLine> orderLines, ArrayList<Product> products) {
         orderView.requestProductId();
         int productId = InputUtil.getIntInput();
-        //todo check if product exists
+        OrderLine orderLine = checkIfProductExists(productId, products);
+        if(orderLine == null) {
+            orderView.productNotFound();
+            return;
+        }
+        orderLines.add(orderLine);
+    }
+
+    private OrderLine checkIfProductExists(int productId, ArrayList<Product> products) {
+        OrderLine orderLine = null;
+
+        for (Product product:products) {
+               if (productId == product.getProductID()) {
+                   orderLine = createOrderLine(product);
+               }
+        }
+        return orderLine;
+    }
+
+    private OrderLine createOrderLine(Product product){
         orderView.requestProductAmount();
         int amount = InputUtil.getIntInput();
-        orderLines.add(new OrderLine(productId, amount));
+        return new OrderLine(product.getProductID(), product.getProductName(), amount, product.getProductPrice());
     }
 }
